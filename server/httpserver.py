@@ -27,9 +27,9 @@ def main():
 		while True:
 			read_ready, write_ready, exception = select.select(inputSocket, [], [])
 			for sock in read_ready:
-				if sock == server_socket: 
-					client_socket, client_address = server_socket.accept()
-					list_socket.append(client_socket)
+				if sock == ServerSocket: 
+					client_socket, client_address = ServerSocket.accept()
+					inputSocket.append(client_socket)
 				else: 
 					request = sock.recv(4096)
 					print request
@@ -43,13 +43,16 @@ def main():
 						f.close()
 						content_length = len(response_content)
 						response_header = StatusCode(200, content_length)
+						print response_header
+						sock.sendall(response_header + response_content)
 					else:
 						f = open('404.html','r')
 						response_content = f.read()
 						f.close()
 						content_length = len(response_content)
 						response_header = StatusCode(404,content_length)
-				sock.sendall(response_header + response_content)
+						print response_header
+						sock.sendall(response_header + response_content)
 	except KeyboardInterrupt:
 		ServerSocket.close()
 		sys.exit(0)
